@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { DEFAULT_SETTINGS, hostExcluded, normalizeSettings, validateSettings, validPattern } from '../src/shared/settings';
+import { DEFAULT_SETTINGS, hostExcluded, normalizeSettings, recognitionThreshold, validateSettings, validPattern } from '../src/shared/settings';
 import { safeLink } from '../src/background/actions';
 
 test('defaults validate and normalized settings do not alias input', () => {
@@ -17,6 +17,21 @@ test('malformed imports and duplicate gestures are rejected', () => {
 });
 test('empty bindings intentionally disables all commands', () => {
   const s = normalizeSettings({ ...DEFAULT_SETTINGS, bindings: [] }); assert.equal(s.bindings.length, 0);
+});
+test('legacy settings preserve their threshold and bindings with filtering enabled', () => {
+  const { distanceFilter: _, ...legacy } = structuredClone(DEFAULT_SETTINGS);
+  legacy.threshold = 28;
+  assert.equal(validateSettings(legacy), null);
+  assert.deepEqual(normalizeSettings(legacy), { ...legacy, distanceFilter: true });
+});
+test('distance filtering can be disabled without losing the stored threshold on export and import', () => {
+  const settings = { ...DEFAULT_SETTINGS, distanceFilter: false, threshold: 28 };
+  assert.equal(validateSettings(settings), null);
+  const imported = normalizeSettings(JSON.parse(JSON.stringify(settings)));
+  assert.equal(imported.distanceFilter, false); assert.equal(imported.threshold, 28);
+  assert.equal(recognitionThreshold(imported), 0);
+  assert.equal(recognitionThreshold({ ...imported, distanceFilter: true }), 28);
+  for (const distanceFilter of [null, 'false', 0]) assert.ok(validateSettings({ ...settings, distanceFilter }));
 });
 test('patterns reject repeats and bound command length', () => {
   assert.equal(validPattern('RDLU'), true);

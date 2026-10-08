@@ -48,8 +48,10 @@ select:hover { border-color: #dcd6f7; }
 .setting-row:last-child { border-bottom: 0; }
 .setting-row strong { font-size: 12px; font-weight: 550; }
 .setting-row input[type=checkbox] { accent-color: var(--purple); width: 17px; height: 17px; }
-.range-wrap { display: flex; align-items: center; gap: 12px; }
-input[type=range] { accent-color: var(--purple); width: 150px; }
+.setting-row.toggle input { appearance: none; width: 36px; height: 21px; margin: 0; border-radius: 20px; background: #cacbd5; position: relative; cursor: pointer; flex-shrink: 0; }
+.setting-row.toggle input:after { content: ""; width: 15px; height: 15px; border-radius: 50%; background: white; position: absolute; top: 3px; left: 3px; transition: transform .15s; }
+.setting-row.toggle input:checked { background: var(--purple); }
+.setting-row.toggle input:checked:after { transform: translateX(15px); }
 output { font-size: 11px; color: #8a86a0; min-width: 37px; }
 .style-controls { display: flex; gap: 15px; align-items: center; font-size: 11px; color: #999; }
 input[type=color] { width: 30px; height: 26px; border: 0; padding: 0; background: none; cursor: pointer; }
@@ -74,4 +76,4 @@ dialog::backdrop { background: #24213555; backdrop-filter: blur(3px); }
 #record-status { font-size: 12px; color: var(--muted); }
 .recorder-actions { display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 16px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-@media (max-width: 700px) { main { padding: 24px 16px; } h1 { font-size: 23px; } td, th { padding-left: 12px; padding-right: 12px; } th:first-child { width: 33%; } .gesture-button { padding: 5px 6px; gap: 5px; } .direction { letter-spacing: 1px; font-size: 18px; } .record-mark { display: none; } .range-wrap input { width: 100px; } dialog { padding: 18px; } #record-canvas { height: 220px; } .record-feedback { align-items: flex-start; flex-direction: column; gap: 4px; } }
+@media (max-width: 700px) { main { padding: 24px 16px; } h1 { font-size: 23px; } td, th { padding-left: 12px; padding-right: 12px; } th:first-child { width: 33%; } .gesture-button { padding: 5px 6px; gap: 5px; } .direction { letter-spacing: 1px; font-size: 18px; } .record-mark { display: none; } dialog { padding: 18px; } #record-canvas { height: 220px; } .record-feedback { align-items: flex-start; flex-direction: column; gap: 4px; } }

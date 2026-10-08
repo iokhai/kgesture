@@ -18,7 +18,7 @@ export class Recognizer {
   move(x: number, y: number): boolean {
     if (this.overflow) return false;
     const dx = x - this.x, dy = y - this.y;
-    if (dx * dx + dy * dy < this.thresholdSquared) return false;
+    if ((dx === 0 && dy === 0) || dx * dx + dy * dy < this.thresholdSquared) return false;
     // A 20% axis dead zone rejects ambiguous diagonals rather than alternating directions.
     const ax = Math.abs(dx), ay = Math.abs(dy);
     let direction: string;

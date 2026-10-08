@@ -1,7 +1,7 @@
 import { Recognizer } from '../core/recognizer';
 import { processPointerSamples } from '../core/pointer-samples';
 import { MenuGate } from '../core/menu';
-import { hostExcluded, normalizeSettings, STORAGE_KEY } from '../shared/settings';
+import { hostExcluded, normalizeSettings, recognitionThreshold, STORAGE_KEY } from '../shared/settings';
 import type { Settings } from '../shared/settings';
 import type { ActionId } from '../shared/actions';
 import { Overlay } from './overlay';
@@ -53,7 +53,7 @@ function start(event: MouseEvent): void {
   href = anchor?.href;
   if (!href) href = target?.closest<HTMLAnchorElement>('a[href]')?.href;
   menu.begin(performance.now());
-  recognizer.start(event.clientX, event.clientY, settings.threshold);
+  recognizer.start(event.clientX, event.clientY, recognitionThreshold(settings));
   overlay.begin(event.clientX, event.clientY, settings);
   window.addEventListener('pointermove', move, { capture: true, passive: true });
   // Mouse button events fire for each button; pointerup waits for ALL buttons.
