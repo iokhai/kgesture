@@ -46,6 +46,7 @@ Keep changes focused and run the checks before submitting:
 pnpm check     # Type checking, behavioral tests, and production build
 pnpm i18n:check # Validate every language catalog and message reference
 pnpm bench     # Pure recognizer benchmark
+pnpm bench:overlay --baseline <commit> # Browser feedback comparison
 pnpm dev       # Watch TypeScript; rebuild after changing public assets
 pnpm run pack  # Create release/kgesture-<version>.zip
 ```

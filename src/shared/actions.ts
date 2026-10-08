@@ -13,6 +13,9 @@ export type ActionId = keyof typeof ACTIONS;
 export function isAction(value: unknown): value is ActionId {
   return typeof value === 'string' && Object.hasOwn(ACTIONS, value);
 }
+const directionArrows: Record<string, string> = { U: '↑', D: '↓', L: '←', R: '→' };
+const directionPattern = /[UDLR]/g;
+const replaceDirection = (direction: string): string => directionArrows[direction]!;
 export function arrows(pattern: string): string {
-  return pattern.replace(/[UDLR]/g, d => ({ U: '↑', D: '↓', L: '←', R: '→' })[d]!);
+  return pattern.replace(directionPattern, replaceDirection);
 }

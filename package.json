@@ -1,6 +1,6 @@
 {
   "name": "kgesture",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -12,6 +12,7 @@
     "i18n:check": "node scripts/check-locales.mjs",
     "test": "node --import tsx --test tests/*.test.ts",
     "bench": "node --import tsx scripts/bench.ts",
+    "bench:overlay": "node scripts/bench-overlay.mjs",
     "check": "pnpm typecheck && pnpm test && pnpm build",
     "pack": "pnpm build && node scripts/pack.mjs"
   },

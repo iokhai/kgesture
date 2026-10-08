@@ -18,11 +18,14 @@ export class Overlay {
   private pattern = '';
   private action: ActionId | undefined;
   private renderedHint = '';
+  private hintDirty = false;
+  private visible = false;
   private settings: Settings | null = null;
 
   begin(x: number, y: number, settings: Settings): void {
     this.clear();
     this.x = x; this.y = y; this.settings = settings;
+    this.visible = settings.showTrail || settings.showHint;
   }
   private mount(): void {
     const settings = this.settings!;
@@ -53,17 +56,19 @@ export class Overlay {
     document.documentElement.append(this.host);
   }
   point(x: number, y: number, pattern: string, action: ActionId | undefined): void {
-    if (!pattern) return;
-    this.mount();
+    if (!pattern || !this.visible) return;
+    if (!this.host) this.mount();
     if (!this.host) return;
-    this.pattern = pattern; this.action = action;
+    if (this.hint && (pattern !== this.pattern || action !== this.action)) {
+      this.pattern = pattern; this.action = action; this.hintDirty = true;
+    }
     if (this.ctx && this.buffer) {
       // Under overload retain the latest point, bounded independently of gesture duration.
       const index = Math.min(this.count, this.buffer.length - 2);
       this.buffer[index] = x; this.buffer[index + 1] = y;
       this.count = Math.min(this.count + 2, this.buffer.length);
     }
-    if (!this.frame) this.frame = requestAnimationFrame(this.draw);
+    if (!this.frame && (this.count || this.hintDirty)) this.frame = requestAnimationFrame(this.draw);
   }
   private draw = (): void => {
     this.frame = 0;
@@ -73,15 +78,19 @@ export class Overlay {
       this.x = this.buffer[this.count - 2]!; this.y = this.buffer[this.count - 1]!;
       this.ctx.stroke(); this.count = 0;
     }
-    const text = `${arrows(this.pattern)}  ${this.action ? ACTIONS[this.action] : unboundLabel}`;
-    if (this.hint && text !== this.renderedHint) { this.hint.textContent = text; this.renderedHint = text; }
+    if (this.hint && this.hintDirty) {
+      this.hintDirty = false;
+      const text = `${arrows(this.pattern)}  ${this.action ? ACTIONS[this.action] : unboundLabel}`;
+      if (text !== this.renderedHint) { this.hint.textContent = text; this.renderedHint = text; }
+    }
   };
   clear(): void {
     if (this.frame) cancelAnimationFrame(this.frame);
     this.frame = 0; this.count = 0;
     this.host?.remove(); this.host = null; this.canvas = null; this.ctx = null; this.hint = null;
     this.buffer = null;
-    this.renderedHint = ''; this.pattern = ''; this.action = undefined;
+    this.settings = null; this.visible = false;
+    this.renderedHint = ''; this.pattern = ''; this.action = undefined; this.hintDirty = false;
     // Release the fullscreen canvas immediately; no retained backing store between gestures.
   }
 }
