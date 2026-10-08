@@ -13,12 +13,10 @@ const form = el<HTMLFormElement>('settings-form');
 const tbody = el<HTMLTableSectionElement>('bindings');
 const status = el('status');
 let loaded = false;
-let storedThreshold = DEFAULT_SETTINGS.threshold;
 function report(text: string, error = false): void { status.textContent = text; status.classList.toggle('error', error); }
 function count(): void { el('binding-count').textContent = String(tbody.rows.length); }
 const recorder = new GestureRecorder(() => ({
-  threshold: storedThreshold,
-  distanceFilter: el<HTMLInputElement>('distanceFilter').checked,
+  threshold: Number(el<HTMLInputElement>('threshold').value),
   trailColor: el<HTMLInputElement>('trailColor').value,
   trailWidth: Number(el<HTMLInputElement>('trailWidth').value),
 }));
@@ -55,17 +53,16 @@ function row(pattern: string, action: ActionId): void {
 }
 function render(s: Settings): void {
   recorder.close();
-  storedThreshold = s.threshold;
-  for (const id of ['enabled', 'distanceFilter', 'showTrail', 'showHint'] as const) el<HTMLInputElement>(id).checked = s[id];
-  for (const id of ['trailWidth', 'trailColor'] as const) el<HTMLInputElement>(id).value = String(s[id]);
+  for (const id of ['enabled', 'showTrail', 'showHint'] as const) el<HTMLInputElement>(id).checked = s[id];
+  for (const id of ['threshold', 'trailWidth', 'trailColor'] as const) el<HTMLInputElement>(id).value = String(s[id]);
   el<HTMLTextAreaElement>('excludedHosts').value = s.excludedHosts.join('\n');
+  el('threshold-value').textContent = `${s.threshold} px`;
   tbody.replaceChildren(); s.bindings.forEach(b => row(b.pattern, b.action));
 }
 function read(): Settings {
   return {
     version: 1, enabled: el<HTMLInputElement>('enabled').checked, showTrail: el<HTMLInputElement>('showTrail').checked,
-    showHint: el<HTMLInputElement>('showHint').checked, threshold: storedThreshold,
-    distanceFilter: el<HTMLInputElement>('distanceFilter').checked,
+    showHint: el<HTMLInputElement>('showHint').checked, threshold: Number(el<HTMLInputElement>('threshold').value),
     trailWidth: Number(el<HTMLInputElement>('trailWidth').value), trailColor: el<HTMLInputElement>('trailColor').value,
     excludedHosts: el<HTMLTextAreaElement>('excludedHosts').value.split('\n').map(h => h.trim().toLowerCase()).filter(Boolean),
     bindings: Array.from(tbody.rows, tr => ({ pattern: tr.dataset.pattern!, action: tr.querySelector('select')!.value as ActionId })),
@@ -73,6 +70,7 @@ function read(): Settings {
 }
 form.addEventListener('input', () => report(t('unsaved')));
 el('enabled').addEventListener('change', () => report(t('unsaved')));
+el('threshold').addEventListener('input', () => { el('threshold-value').textContent = `${el<HTMLInputElement>('threshold').value} px`; });
 form.addEventListener('submit', event => {
   event.preventDefault(); if (!loaded) return;
   const s = read(), error = validateSettings(s);

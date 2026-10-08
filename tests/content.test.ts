@@ -30,8 +30,6 @@ test('content events execute the confirmed command at right-button release', asy
     scrollTo({ top }: ScrollToOptions) { this.scrollTop = Math.max(0, Math.min(top!, 1000)); }
   }
   const root = new Element();
-  const settings = { ...DEFAULT_SETTINGS, showTrail: false, showHint: false };
-  let changed!: (changes: Record<string, chrome.storage.StorageChange>, area: string) => void;
   Object.assign(doc, { defaultView: view, scrollingElement: root, documentElement: root, body: root });
   Object.assign(view, {
     getComputedStyle: () => ({ display: 'block', flexDirection: 'row' }),
@@ -45,8 +43,8 @@ test('content events execute the confirmed command at right-button release', asy
       runtime: { id: 'kgesture' },
       i18n: { getMessage: (key: string) => key },
       storage: {
-        local: { get: async () => ({ settings }) },
-        onChanged: { addListener(listener: typeof changed) { changed = listener; } },
+        local: { get: async () => ({ settings: { ...DEFAULT_SETTINGS, showTrail: false, showHint: false } }) },
+        onChanged: { addListener() {} },
       },
     },
   };
@@ -107,16 +105,6 @@ test('content events execute the confirmed command at right-button release', asy
       assert.equal(root.scrollTop, 600);
       view.dispatch('mouseup', input({ clientY: 330, buttons: 0 }));
       assert.equal(root.scrollTop, 0);
-    });
-    await t.test('the distance switch changes live recognition of a one-pixel upward stroke', () => {
-      for (const distanceFilter of [false, true]) {
-        changed({ settings: { newValue: { ...settings, distanceFilter } } }, 'local');
-        root.scrollTop = 600;
-        view.dispatch('mousedown', input());
-        view.dispatch('pointermove', input({ button: -1, clientY: 399 }));
-        view.dispatch('mouseup', input({ clientY: 399, buttons: 0 }));
-        assert.equal(root.scrollTop, distanceFilter ? 600 : 0);
-      }
     });
   } finally {
     for (const [name, descriptor] of saved) {

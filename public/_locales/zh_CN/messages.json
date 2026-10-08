@@ -41,9 +41,6 @@
   "actionHint": {
     "message": "动作提示"
   },
-  "distanceFilter": {
-    "message": "防误触"
-  },
   "threshold": {
     "message": "识别距离"
   },

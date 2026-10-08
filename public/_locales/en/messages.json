@@ -41,9 +41,6 @@
   "actionHint": {
     "message": "Action hint"
   },
-  "distanceFilter": {
-    "message": "Ignore small movements"
-  },
   "threshold": {
     "message": "Recognition distance"
   },

@@ -2,9 +2,8 @@ import { Recognizer } from '../core/recognizer';
 import { processPointerSamples } from '../core/pointer-samples';
 import { arrows } from '../shared/actions';
 import { t } from '../shared/i18n';
-import { recognitionThreshold } from '../shared/settings';
 
-interface Style { threshold: number; distanceFilter: boolean; trailColor: string; trailWidth: number }
+interface Style { threshold: number; trailColor: string; trailWidth: number }
 interface Recording {
   commit: (pattern: string) => void;
   conflict: (pattern: string) => string | undefined;
@@ -80,7 +79,7 @@ export class GestureRecorder {
     this.canvas.height = Math.round(rect.height);
     this.x = event.clientX - rect.left; this.y = event.clientY - rect.top;
     const style = this.style();
-    this.recognizer.start(this.x, this.y, recognitionThreshold(style));
+    this.recognizer.start(this.x, this.y, style.threshold);
     this.context.strokeStyle = style.trailColor; this.context.lineWidth = style.trailWidth;
     this.context.lineCap = 'round'; this.context.lineJoin = 'round';
     this.pointer = event.pointerId;

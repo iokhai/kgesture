@@ -36,11 +36,3 @@ test('ambiguous samples preserve displacement for a valid upward stroke and its 
   assert.equal(r.move(20, -6), false);
   r.move(20, 0); assert.equal(r.pattern, 'UD');
 });
-test('no distance filtering recognizes small moves but never creates a direction from a stationary sample', () => {
-  const r = new Recognizer(); r.start(100, 100, 0);
-  assert.equal(r.move(100, 100), false); assert.equal(r.pattern, '');
-  assert.equal(r.move(100, 99), true); assert.equal(r.pattern, 'U');
-  assert.equal(r.move(100, 99), false); assert.equal(r.pattern, 'U');
-  assert.equal(r.move(100, 100), true); assert.equal(r.pattern, 'UD');
-  r.start(100, 100, 12); assert.equal(r.move(100, 99), false); assert.equal(r.pattern, '');
-});
