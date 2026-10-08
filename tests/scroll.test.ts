@@ -3,7 +3,14 @@ import assert from 'node:assert/strict';
 import { scrollToEdge } from '../src/content/scroll';
 
 function fixture() {
-  const view = { getComputedStyle: (element: Element) => (element as unknown as FakeElement).style };
+  const view = {
+    getComputedStyle: (element: Element) => (element as unknown as FakeElement).style,
+    get scrollY() { return (doc.scrollingElement as unknown as FakeElement).scrollTop; },
+    scrollTo({ top }: ScrollToOptions) {
+      const root = doc.scrollingElement as unknown as FakeElement;
+      root.scrollTop = Math.max(0, Math.min(top!, root.scrollHeight - root.clientHeight));
+    },
+  };
   const doc = { defaultView: view, scrollingElement: null as unknown as Element, documentElement: null as unknown as Element } as unknown as Document;
   class FakeElement {
     ownerDocument = doc;
@@ -24,17 +31,16 @@ function fixture() {
   return { FakeElement, doc, root };
 }
 
-test('scroll the nearest movable container, then the outer page when the container is at the requested edge', () => {
+test('one gesture scrolls both a nested component and the page to the requested edge', () => {
   const { FakeElement, root } = fixture();
   const pane = new FakeElement(); pane.parentElement = root.element();
   const child = new FakeElement(); child.scrollHeight = child.clientHeight; child.parentElement = pane.element();
   assert.equal(scrollToEdge(child.element(), 'top'), true);
-  assert.equal(pane.scrollTop, 0); assert.equal(root.scrollTop, 500);
-  assert.equal(scrollToEdge(child.element(), 'top'), true);
-  assert.equal(root.scrollTop, 0);
-  pane.scrollTop = 1000; root.scrollTop = 200;
+  assert.equal(pane.scrollTop, 0); assert.equal(root.scrollTop, 0);
+  assert.equal(scrollToEdge(child.element(), 'top'), false);
+  pane.scrollTop = 200; root.scrollTop = 200;
   assert.equal(scrollToEdge(child.element(), 'bottom'), true);
-  assert.equal(root.scrollTop, 1000);
+  assert.equal(pane.scrollTop, 1000); assert.equal(root.scrollTop, 1000);
 });
 
 test('cross shadow hosts and assigned slots to reach the scrolling container', () => {
@@ -55,7 +61,24 @@ test('reverse-column lists use negative positions for the visual top and zero fo
   chat.scrollTop = -300; chat.parentElement = root.element();
   assert.equal(scrollToEdge(chat.element(), 'top'), true); assert.equal(chat.scrollTop, -1000);
   assert.equal(scrollToEdge(chat.element(), 'bottom'), true); assert.equal(chat.scrollTop, 0);
-  assert.equal(root.scrollTop, 500);
+  assert.equal(root.scrollTop, 1000);
+});
+
+test('programmatically scrolling overflow-hidden containers must not be filtered out', () => {
+  const { FakeElement, root } = fixture(); root.scrollTop = 0;
+  const pane = new FakeElement(); pane.style.overflowY = 'hidden'; pane.scrollTop = 600; pane.parentElement = root.element();
+  const child = new FakeElement(); child.scrollHeight = child.clientHeight; child.parentElement = pane.element();
+  assert.equal(scrollToEdge(child.element(), 'top'), true);
+  assert.equal(pane.scrollTop, 0);
+  assert.equal(scrollToEdge(child.element(), 'bottom'), true);
+  assert.equal(pane.scrollTop, 1000);
+});
+
+test('a disconnected ancestry still scrolls the window viewport', () => {
+  const { FakeElement, root } = fixture();
+  const child = new FakeElement(); child.scrollHeight = child.clientHeight;
+  assert.equal(scrollToEdge(child.element(), 'top'), true); assert.equal(root.scrollTop, 0);
+  assert.equal(scrollToEdge(child.element(), 'bottom'), true); assert.equal(root.scrollTop, 1000);
 });
 
 test('a detached starting node falls back to the live document root', () => {
