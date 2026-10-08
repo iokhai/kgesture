@@ -29,3 +29,11 @@ KGesture was tested in Google Chrome for Testing with its unpacked extension. Th
 `tests/content.test.ts` checks the real content entry point's event handlers, including release drift, button changes before `mouseup`, confirmed turns, stationary clicks, cancellation, and trusted input. Browser checks also verify final scroll position rather than merely the presence of an action hint.
 
 With 0.1.5, release offsets of 0, 5, and 15 pixels all finished at `scrollY = 0`. Both left-first and right-first chord sequences also finished at zero on right-button release. The automated suite passed; separate browser checks covered scrolling containers and the gesture recorder. These observations support the fixes for the reproduced conditions, not a guarantee about an unrecorded real-world failure.
+
+## 0.1.8 release sequencing
+
+The original ignores a move whose button mask no longer includes the right button; KGesture was cancelling the confirmed command immediately. A controlled browser sequence reproduced an upward hint followed by no scroll when that move preceded `mouseup`. KGesture now ignores the move and lets the release handler finish the command.
+
+The same sequence now finishes at the top. During manual verification in Brave, opt-in diagnostics recorded 0.1.8 executing top/bottom actions and retaining the resulting viewport position after 100 ms. The user reported that the problem no longer occurred during that verification. The temporary recording was disabled and cleared afterward. No raw input logs are included in the repository.
+
+See [Gesture diagnostics](diagnostics.md) for optional local tracing if a different failure occurs.

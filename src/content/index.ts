@@ -7,6 +7,8 @@ import type { ActionId } from '../shared/actions';
 import { Overlay } from './overlay';
 import { t } from '../shared/i18n';
 import { scrollToEdge } from './scroll';
+import { beginDiagnostics, finishDiagnostics, inputDiagnostics, patternDiagnostics, resultDiagnostics } from './diagnostics';
+import type { GestureTrace } from './diagnostics';
 
 const recognizer = new Recognizer();
 const menu = new MenuGate();
@@ -23,7 +25,7 @@ let href: string | undefined;
 let settingsRevision = 0;
 
 function apply(value: unknown): void {
-  cancel();
+  cancel('settings-changed');
   settings = normalizeSettings(value);
   let host = location.host.toLowerCase();
   // about:blank child frames inherit their creator origin.
@@ -46,8 +48,10 @@ void chrome.storage.local.get(STORAGE_KEY).then(data => {
 function start(event: MouseEvent): void {
   if (!event.isTrusted || event.button !== 2 || event.ctrlKey || event.shiftKey || !ready || !enabled) return;
   if (!chrome.runtime.id) { dispose(); return; }
-  cancel();
+  cancel('new-gesture');
   active = true;
+  beginDiagnostics();
+  inputDiagnostics(event);
   target = event.composedPath().find(item => item instanceof Element) as Element | undefined ?? null;
   const anchor = event.composedPath().find(item => item instanceof HTMLAnchorElement) as HTMLAnchorElement | undefined;
   href = anchor?.href;
@@ -66,32 +70,43 @@ function start(event: MouseEvent): void {
   document.addEventListener('visibilitychange', visibility);
 }
 function sample(x: number, y: number): void {
-  if (recognizer.move(x, y)) gestureAction = recognizer.overflow ? undefined : bindings.get(recognizer.pattern);
+  if (recognizer.move(x, y)) {
+    gestureAction = recognizer.overflow ? undefined : bindings.get(recognizer.pattern);
+    patternDiagnostics(recognizer.pattern, gestureAction);
+  }
   overlay.point(x, y, recognizer.pattern, gestureAction);
 }
 function move(event: PointerEvent): void {
   if (!event.isTrusted || event.pointerType !== 'mouse' || !active) return;
+  inputDiagnostics(event);
   // Chorded button changes also emit pointermove. Let mouseup finish the command.
   if (event.button !== -1) return;
-  if (!(event.buttons & 2) || event.ctrlKey || event.shiftKey) { cancel(); return; }
+  if (event.ctrlKey || event.shiftKey) { cancel('modifier'); return; }
+  // Like simpleGestures, ignore a released-button move and wait for mouseup.
+  // Input streams can update buttons before dispatching the corresponding release.
+  if (!(event.buttons & 2)) return;
   processPointerSamples(event, sample);
 }
 function end(event: MouseEvent): void {
   if (!event.isTrusted || event.button !== 2 || !active) return;
-  if (event.ctrlKey || event.shiftKey) { cancel(); return; }
+  inputDiagnostics(event);
+  if (event.ctrlKey || event.shiftKey) { cancel('modifier'); return; }
   // Like simpleGestures, release executes the command confirmed by move events.
   // A different release coordinate must not silently replace the displayed command.
   const pattern = recognizer.pattern;
   const action = recognizer.overflow ? undefined : bindings.get(pattern);
   const startTarget = target, link = href;
+  const trace = finishDiagnostics(action ? 'released' : 'unbound', pattern, action);
   menu.finish(performance.now(), !!pattern);
-  cancel();
-  if (action) execute(action, startTarget, link);
+  cancel('completed');
+  if (action) execute(action, startTarget, link, trace);
 }
-function pointerCancel(event: PointerEvent): void { if (event.isTrusted && event.pointerType === 'mouse') cancel(); }
-function key(event: KeyboardEvent): void { if (event.isTrusted && ['Escape', 'Control', 'Shift'].includes(event.key)) cancel(); }
-function visibility(): void { if (document.hidden) cancel(); }
-function cancel(): void {
+function pointerCancel(event: PointerEvent): void { if (event.isTrusted && event.pointerType === 'mouse') cancel(event); }
+function key(event: KeyboardEvent): void { if (event.isTrusted && ['Escape', 'Control', 'Shift'].includes(event.key)) cancel(`key:${event.key}`); }
+function visibility(): void { if (document.hidden) cancel('hidden'); }
+function cancel(reason?: Event | string): void {
+  if (reason && typeof reason !== 'string') inputDiagnostics(reason);
+  finishDiagnostics('cancelled', recognizer.pattern, gestureAction, typeof reason === 'string' ? reason : reason?.type ?? 'reset');
   active = false; gestureAction = undefined; target = null; href = undefined;
   window.removeEventListener('pointermove', move, true);
   window.removeEventListener('mouseup', end, true);
@@ -108,22 +123,24 @@ function context(event: MouseEvent): void {
   if (menu.shouldSuppress(performance.now(), earlyMenu, active)) event.preventDefault();
 }
 function dispose(): void {
-  enabled = false; cancel();
+  enabled = false; cancel('disposed');
   window.removeEventListener('mousedown', start, true);
   window.removeEventListener('contextmenu', context, true);
 }
-function execute(action: ActionId, element: Element | null, link: string | undefined): void {
+function execute(action: ActionId, element: Element | null, link: string | undefined, trace?: GestureTrace): void {
   if (action === 'scrollTop' || action === 'scrollBottom') {
-    scrollToEdge(element, action === 'scrollTop' ? 'top' : 'bottom');
-  } else if (action === 'stop') window.stop();
+    try { resultDiagnostics(trace, true, scrollToEdge(element, action === 'scrollTop' ? 'top' : 'bottom')); }
+    catch (error) { resultDiagnostics(trace, false, undefined, String(error)); console.warn('KGesture:', error); }
+  } else if (action === 'stop') { window.stop(); resultDiagnostics(trace, true); }
   else {
     // At most one message per completed command; the worker validates binding and sender.
     try {
       void chrome.runtime.sendMessage({ type: 'gesture', pattern: recognizer.pattern, action, href: link })
         .then((response: { ok?: boolean; error?: string } | undefined) => {
+          resultDiagnostics(trace, !!response?.ok, undefined, response?.error);
           if (!response?.ok) console.warn('KGesture:', response?.error ?? t('noResponse'));
-        }).catch(error => { if (!chrome.runtime.id) dispose(); else console.warn('KGesture:', error); });
-    } catch { dispose(); }
+        }).catch(error => { resultDiagnostics(trace, false, undefined, String(error)); if (!chrome.runtime.id) dispose(); else console.warn('KGesture:', error); });
+    } catch (error) { resultDiagnostics(trace, false, undefined, String(error)); dispose(); }
   }
 }
 window.addEventListener('mousedown', start, { capture: true, passive: true });

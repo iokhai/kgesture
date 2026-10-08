@@ -77,6 +77,12 @@ test('content events execute the confirmed command at right-button release', asy
       view.dispatch('mouseup', input({ clientY: 330, buttons: 1 }));
       assert.equal(root.scrollTop, 0);
     });
+    await t.test('a move reporting no held buttons must not discard the command before mouseup', () => {
+      beginUp();
+      view.dispatch('pointermove', input({ button: -1, buttons: 0, clientY: 330 }));
+      view.dispatch('mouseup', input({ clientY: 330, buttons: 0 }));
+      assert.equal(root.scrollTop, 0);
+    });
     await t.test('movement samples still confirm a real turn before release', () => {
       beginUp();
       view.dispatch('pointermove', input({ button: -1, clientY: 410 }));
