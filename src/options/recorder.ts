@@ -104,7 +104,7 @@ export class GestureRecorder {
 
   private finish(event: PointerEvent): void {
     if (event.pointerId !== this.pointer) return;
-    this.move(event);
+    // Keep the recorded command consistent with move-event recognition on pages.
     this.pointer = null;
     if (this.canvas.hasPointerCapture(event.pointerId)) this.canvas.releasePointerCapture(event.pointerId);
     const pattern = this.recognizer.pattern;

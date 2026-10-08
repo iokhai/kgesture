@@ -17,7 +17,6 @@ let ready = false;
 let enabled = false;
 let bindings = new Map<string, ActionId>();
 let active = false;
-let pointerId = -1;
 let gestureAction: ActionId | undefined;
 let target: Element | null = null;
 let href: string | undefined;
@@ -44,12 +43,11 @@ void chrome.storage.local.get(STORAGE_KEY).then(data => {
   if (settingsRevision === initialRevision) apply(data[STORAGE_KEY]);
 }).catch(dispose);
 
-function start(event: PointerEvent): void {
-  if (!event.isTrusted || event.pointerType !== 'mouse' || event.button !== 2 || event.ctrlKey || event.shiftKey || !ready || !enabled) return;
+function start(event: MouseEvent): void {
+  if (!event.isTrusted || event.button !== 2 || event.ctrlKey || event.shiftKey || !ready || !enabled) return;
   if (!chrome.runtime.id) { dispose(); return; }
   cancel();
   active = true;
-  pointerId = event.pointerId;
   target = event.composedPath().find(item => item instanceof Element) as Element | undefined ?? null;
   const anchor = event.composedPath().find(item => item instanceof HTMLAnchorElement) as HTMLAnchorElement | undefined;
   href = anchor?.href;
@@ -58,7 +56,8 @@ function start(event: PointerEvent): void {
   recognizer.start(event.clientX, event.clientY, settings.threshold);
   overlay.begin(event.clientX, event.clientY, settings);
   window.addEventListener('pointermove', move, { capture: true, passive: true });
-  window.addEventListener('pointerup', end, true);
+  // Mouse button events fire for each button; pointerup waits for ALL buttons.
+  window.addEventListener('mouseup', end, true);
   window.addEventListener('pointercancel', pointerCancel, true);
   window.addEventListener('blur', cancel);
   window.addEventListener('pagehide', cancel);
@@ -71,14 +70,17 @@ function sample(x: number, y: number): void {
   overlay.point(x, y, recognizer.pattern, gestureAction);
 }
 function move(event: PointerEvent): void {
-  if (!event.isTrusted || !active || event.pointerId !== pointerId) return;
+  if (!event.isTrusted || event.pointerType !== 'mouse' || !active) return;
+  // Chorded button changes also emit pointermove. Let mouseup finish the command.
+  if (event.button !== -1) return;
   if (!(event.buttons & 2) || event.ctrlKey || event.shiftKey) { cancel(); return; }
   processPointerSamples(event, sample);
 }
-function end(event: PointerEvent): void {
-  if (!event.isTrusted || event.button !== 2 || !active || event.pointerId !== pointerId) return;
+function end(event: MouseEvent): void {
+  if (!event.isTrusted || event.button !== 2 || !active) return;
   if (event.ctrlKey || event.shiftKey) { cancel(); return; }
-  recognizer.move(event.clientX, event.clientY);
+  // Like simpleGestures, release executes the command confirmed by move events.
+  // A different release coordinate must not silently replace the displayed command.
   const pattern = recognizer.pattern;
   const action = recognizer.overflow ? undefined : bindings.get(pattern);
   const startTarget = target, link = href;
@@ -86,13 +88,13 @@ function end(event: PointerEvent): void {
   cancel();
   if (action) execute(action, startTarget, link);
 }
-function pointerCancel(event: PointerEvent): void { if (event.isTrusted && event.pointerId === pointerId) cancel(); }
+function pointerCancel(event: PointerEvent): void { if (event.isTrusted && event.pointerType === 'mouse') cancel(); }
 function key(event: KeyboardEvent): void { if (event.isTrusted && ['Escape', 'Control', 'Shift'].includes(event.key)) cancel(); }
 function visibility(): void { if (document.hidden) cancel(); }
 function cancel(): void {
-  active = false; pointerId = -1; gestureAction = undefined; target = null; href = undefined;
+  active = false; gestureAction = undefined; target = null; href = undefined;
   window.removeEventListener('pointermove', move, true);
-  window.removeEventListener('pointerup', end, true);
+  window.removeEventListener('mouseup', end, true);
   window.removeEventListener('pointercancel', pointerCancel, true);
   window.removeEventListener('blur', cancel);
   window.removeEventListener('pagehide', cancel);
@@ -107,7 +109,7 @@ function context(event: MouseEvent): void {
 }
 function dispose(): void {
   enabled = false; cancel();
-  window.removeEventListener('pointerdown', start, true);
+  window.removeEventListener('mousedown', start, true);
   window.removeEventListener('contextmenu', context, true);
 }
 function execute(action: ActionId, element: Element | null, link: string | undefined): void {
@@ -124,5 +126,5 @@ function execute(action: ActionId, element: Element | null, link: string | undef
     } catch { dispose(); }
   }
 }
-window.addEventListener('pointerdown', start, { capture: true, passive: true });
+window.addEventListener('mousedown', start, { capture: true, passive: true });
 window.addEventListener('contextmenu', context, true);
