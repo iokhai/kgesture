@@ -1,4 +1,5 @@
 import { Recognizer } from '../core/recognizer';
+import { processPointerSamples } from '../core/pointer-samples';
 import { arrows } from '../shared/actions';
 import { t } from '../shared/i18n';
 
@@ -21,6 +22,8 @@ export class GestureRecorder {
   private completed = false;
   private x = 0;
   private y = 0;
+  private left = 0;
+  private top = 0;
 
   constructor(private style: () => Style) {
     document.getElementById('record-cancel')!.addEventListener('click', () => this.close());
@@ -87,12 +90,17 @@ export class GestureRecorder {
   private move(event: PointerEvent): void {
     if (event.pointerId !== this.pointer) return;
     const rect = this.canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left, y = event.clientY - rect.top;
+    this.left = rect.left; this.top = rect.top;
+    processPointerSamples(event, this.sample);
+    this.result.textContent = arrows(this.recognizer.pattern);
+  }
+
+  private sample = (clientX: number, clientY: number): void => {
+    const x = clientX - this.left, y = clientY - this.top;
     this.recognizer.move(x, y);
     this.context.beginPath(); this.context.moveTo(this.x, this.y); this.context.lineTo(x, y); this.context.stroke();
     this.x = x; this.y = y;
-    this.result.textContent = arrows(this.recognizer.pattern);
-  }
+  };
 
   private finish(event: PointerEvent): void {
     if (event.pointerId !== this.pointer) return;

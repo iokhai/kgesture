@@ -29,3 +29,10 @@ test('reset prevents state leaking between gestures', () => {
   r.start(500, 500, 20); assert.equal(r.pattern, ''); r.move(500, 485); assert.equal(r.pattern, '');
   r.move(500, 480); assert.equal(r.pattern, 'U');
 });
+test('ambiguous samples preserve displacement for a valid upward stroke and its reversal', () => {
+  const r = new Recognizer(); r.start(0, 0, 12);
+  assert.equal(r.move(10, -10), false);
+  r.move(10, -16); assert.equal(r.pattern, 'U');
+  assert.equal(r.move(20, -6), false);
+  r.move(20, 0); assert.equal(r.pattern, 'UD');
+});

@@ -8,7 +8,8 @@ A lightweight mouse gesture extension for Chromium-based browsers.
 - Customize trails, action hints, recognition distance, and excluded sites.
 - Import and export local settings as JSON, with no telemetry or cloud service.
 - English and Simplified Chinese localization, selected by the browser UI language.
-- Bounded gesture state, frame-batched drawing, and no mousemove listener while idle.
+- Bounded gesture state, frame-batched drawing, and no pointermove listener while idle.
+- Coalesced pointer samples preserve fast turns, including up/down gestures.
 
 ## Installation
 
