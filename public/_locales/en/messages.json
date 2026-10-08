@@ -1,0 +1,261 @@
+{
+  "extensionName": {
+    "message": "KGesture"
+  },
+  "extensionDescription": {
+    "message": "Lightweight mouse gestures for navigation, tabs, and custom actions."
+  },
+  "toolbarTitle": {
+    "message": "KGesture settings"
+  },
+  "localeTag": {
+    "message": "en"
+  },
+  "settingsTitle": {
+    "message": "KGesture · Settings"
+  },
+  "settingsHeading": {
+    "message": "Gesture settings"
+  },
+  "enabled": {
+    "message": "Enabled"
+  },
+  "gestures": {
+    "message": "Gestures"
+  },
+  "recordGesture": {
+    "message": "Record gesture"
+  },
+  "action": {
+    "message": "Action"
+  },
+  "controls": {
+    "message": "Controls"
+  },
+  "appearance": {
+    "message": "Appearance & recognition"
+  },
+  "trail": {
+    "message": "Trail"
+  },
+  "actionHint": {
+    "message": "Action hint"
+  },
+  "threshold": {
+    "message": "Recognition distance"
+  },
+  "trailStyle": {
+    "message": "Trail style"
+  },
+  "trailColor": {
+    "message": "Trail color"
+  },
+  "trailWidth": {
+    "message": "Trail width"
+  },
+  "excludedSites": {
+    "message": "Excluded sites"
+  },
+  "excludedSitesLabel": {
+    "message": "Excluded domains, one per line"
+  },
+  "excludedSitesHelp": {
+    "message": "One domain per line. Wildcards such as *.example.org are supported."
+  },
+  "configuration": {
+    "message": "Configuration"
+  },
+  "exportSettings": {
+    "message": "Export"
+  },
+  "importSettings": {
+    "message": "Import"
+  },
+  "resetDefaults": {
+    "message": "Reset defaults"
+  },
+  "save": {
+    "message": "Save"
+  },
+  "closeRecording": {
+    "message": "Close recorder"
+  },
+  "recordingHelp": {
+    "message": "Hold a mouse button and draw below."
+  },
+  "recordingArea": {
+    "message": "Gesture recording area"
+  },
+  "recordedDirections": {
+    "message": "Recorded directions"
+  },
+  "rerecord": {
+    "message": "Record again"
+  },
+  "rerecordGesture": {
+    "message": "Re-record gesture"
+  },
+  "useGesture": {
+    "message": "Use gesture"
+  },
+  "deleteGesture": {
+    "message": "Delete gesture"
+  },
+  "unsaved": {
+    "message": "Unsaved changes"
+  },
+  "saved": {
+    "message": "Saved"
+  },
+  "saveFailed": {
+    "message": "Could not save. Try again."
+  },
+  "defaultsRestored": {
+    "message": "Defaults restored. Save to apply."
+  },
+  "exported": {
+    "message": "Exported"
+  },
+  "imported": {
+    "message": "Imported. Save to apply."
+  },
+  "fileTooLarge": {
+    "message": "The configuration file is too large."
+  },
+  "invalidJson": {
+    "message": "Invalid JSON file."
+  },
+  "importFailed": {
+    "message": "Could not import this file."
+  },
+  "loadFailed": {
+    "message": "Could not load settings. Reopen this page."
+  },
+  "recording": {
+    "message": "Recording"
+  },
+  "gestureTooLong": {
+    "message": "Gesture too long. Record again."
+  },
+  "drawDirection": {
+    "message": "Draw at least one direction."
+  },
+  "gestureAlreadyUsed": {
+    "message": "Already assigned to “$ACTION$”.",
+    "placeholders": {
+      "action": {
+        "content": "$1"
+      }
+    }
+  },
+  "unboundGesture": {
+    "message": "Unassigned gesture"
+  },
+  "invalidVersion": {
+    "message": "Unsupported configuration version."
+  },
+  "invalidSwitch": {
+    "message": "Invalid toggle setting."
+  },
+  "invalidThreshold": {
+    "message": "Recognition distance must be between 4 and 64 px."
+  },
+  "invalidTrailWidth": {
+    "message": "Trail width must be between 1 and 12 px."
+  },
+  "invalidTrailColor": {
+    "message": "Invalid trail color."
+  },
+  "invalidHosts": {
+    "message": "Use domains such as example.com or *.example.com."
+  },
+  "tooManyGestures": {
+    "message": "Up to 128 gestures are supported."
+  },
+  "invalidPattern": {
+    "message": "Invalid gesture: use up to 16 directions with no adjacent repeats."
+  },
+  "duplicatePattern": {
+    "message": "Gesture $PATTERN$ is already assigned.",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "invalidRequest": {
+    "message": "Invalid gesture request."
+  },
+  "bindingChanged": {
+    "message": "Gestures are disabled or the binding has changed."
+  },
+  "actionFailed": {
+    "message": "Action failed."
+  },
+  "noResponse": {
+    "message": "No response to the action."
+  },
+  "localOnlyAction": {
+    "message": "This action must run inside the page."
+  },
+  "openSettingsFailed": {
+    "message": "Could not open settings."
+  },
+  "clearPopupFailed": {
+    "message": "Could not clear the popup."
+  },
+  "actionBack": {
+    "message": "Back"
+  },
+  "actionForward": {
+    "message": "Forward"
+  },
+  "actionReload": {
+    "message": "Reload"
+  },
+  "actionReloadHard": {
+    "message": "Reload without cache"
+  },
+  "actionScrollTop": {
+    "message": "Scroll to top"
+  },
+  "actionScrollBottom": {
+    "message": "Scroll to bottom"
+  },
+  "actionStop": {
+    "message": "Stop loading"
+  },
+  "actionNewTab": {
+    "message": "New tab / open link"
+  },
+  "actionNewBackgroundTab": {
+    "message": "Open link in background"
+  },
+  "actionCloseTab": {
+    "message": "Close current tab"
+  },
+  "actionRestoreTab": {
+    "message": "Restore last closed tab"
+  },
+  "actionDuplicateTab": {
+    "message": "Duplicate tab"
+  },
+  "actionNextTab": {
+    "message": "Next tab"
+  },
+  "actionPreviousTab": {
+    "message": "Previous tab"
+  },
+  "actionTogglePin": {
+    "message": "Pin / unpin tab"
+  },
+  "actionCloseLeft": {
+    "message": "Close tabs to the left"
+  },
+  "actionCloseRight": {
+    "message": "Close tabs to the right"
+  },
+  "actionOptions": {
+    "message": "Open settings"
+  }
+}

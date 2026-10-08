@@ -1,0 +1,261 @@
+{
+  "extensionName": {
+    "message": "KGesture"
+  },
+  "extensionDescription": {
+    "message": "轻量鼠标手势：快速导航、管理标签页、自定义动作。"
+  },
+  "toolbarTitle": {
+    "message": "KGesture 设置"
+  },
+  "localeTag": {
+    "message": "zh-CN"
+  },
+  "settingsTitle": {
+    "message": "KGesture · 设置"
+  },
+  "settingsHeading": {
+    "message": "手势设置"
+  },
+  "enabled": {
+    "message": "启用"
+  },
+  "gestures": {
+    "message": "手势"
+  },
+  "recordGesture": {
+    "message": "录制手势"
+  },
+  "action": {
+    "message": "动作"
+  },
+  "controls": {
+    "message": "操作"
+  },
+  "appearance": {
+    "message": "外观与识别"
+  },
+  "trail": {
+    "message": "轨迹"
+  },
+  "actionHint": {
+    "message": "动作提示"
+  },
+  "threshold": {
+    "message": "识别距离"
+  },
+  "trailStyle": {
+    "message": "轨迹样式"
+  },
+  "trailColor": {
+    "message": "轨迹颜色"
+  },
+  "trailWidth": {
+    "message": "轨迹宽度"
+  },
+  "excludedSites": {
+    "message": "停用网站"
+  },
+  "excludedSitesLabel": {
+    "message": "停用网站，每行一个域名"
+  },
+  "excludedSitesHelp": {
+    "message": "每行一个域名，支持 *.example.org。"
+  },
+  "configuration": {
+    "message": "配置"
+  },
+  "exportSettings": {
+    "message": "导出"
+  },
+  "importSettings": {
+    "message": "导入"
+  },
+  "resetDefaults": {
+    "message": "恢复默认"
+  },
+  "save": {
+    "message": "保存"
+  },
+  "closeRecording": {
+    "message": "关闭录制"
+  },
+  "recordingHelp": {
+    "message": "在下方按住鼠标画出手势。"
+  },
+  "recordingArea": {
+    "message": "手势录制区"
+  },
+  "recordedDirections": {
+    "message": "录制方向"
+  },
+  "rerecord": {
+    "message": "重录"
+  },
+  "rerecordGesture": {
+    "message": "重新录制手势"
+  },
+  "useGesture": {
+    "message": "使用此手势"
+  },
+  "deleteGesture": {
+    "message": "删除手势"
+  },
+  "unsaved": {
+    "message": "未保存"
+  },
+  "saved": {
+    "message": "已保存"
+  },
+  "saveFailed": {
+    "message": "保存失败，请重试"
+  },
+  "defaultsRestored": {
+    "message": "已恢复默认，待保存"
+  },
+  "exported": {
+    "message": "已导出"
+  },
+  "imported": {
+    "message": "已导入，待保存"
+  },
+  "fileTooLarge": {
+    "message": "配置文件过大"
+  },
+  "invalidJson": {
+    "message": "JSON 文件格式无效"
+  },
+  "importFailed": {
+    "message": "导入失败"
+  },
+  "loadFailed": {
+    "message": "无法读取配置，请重新打开设置页"
+  },
+  "recording": {
+    "message": "录制中"
+  },
+  "gestureTooLong": {
+    "message": "手势过长，请重录"
+  },
+  "drawDirection": {
+    "message": "请画出一个方向"
+  },
+  "gestureAlreadyUsed": {
+    "message": "已用于「$ACTION$」",
+    "placeholders": {
+      "action": {
+        "content": "$1"
+      }
+    }
+  },
+  "unboundGesture": {
+    "message": "未绑定手势"
+  },
+  "invalidVersion": {
+    "message": "配置版本不受支持。"
+  },
+  "invalidSwitch": {
+    "message": "开关配置无效。"
+  },
+  "invalidThreshold": {
+    "message": "识别距离应为 4–64 像素。"
+  },
+  "invalidTrailWidth": {
+    "message": "轨迹宽度应为 1–12 像素。"
+  },
+  "invalidTrailColor": {
+    "message": "轨迹颜色无效。"
+  },
+  "invalidHosts": {
+    "message": "停用网站应填写域名，例如 example.com 或 *.example.com。"
+  },
+  "tooManyGestures": {
+    "message": "最多支持 128 个手势。"
+  },
+  "invalidPattern": {
+    "message": "手势最多 16 段，相邻方向不能重复。"
+  },
+  "duplicatePattern": {
+    "message": "手势 $PATTERN$ 重复。",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "invalidRequest": {
+    "message": "无效的手势请求"
+  },
+  "bindingChanged": {
+    "message": "手势已停用或配置已更改"
+  },
+  "actionFailed": {
+    "message": "动作执行失败"
+  },
+  "noResponse": {
+    "message": "动作没有响应"
+  },
+  "localOnlyAction": {
+    "message": "此动作只允许在页面内执行"
+  },
+  "openSettingsFailed": {
+    "message": "打开设置失败"
+  },
+  "clearPopupFailed": {
+    "message": "清除弹窗失败"
+  },
+  "actionBack": {
+    "message": "后退"
+  },
+  "actionForward": {
+    "message": "前进"
+  },
+  "actionReload": {
+    "message": "刷新"
+  },
+  "actionReloadHard": {
+    "message": "强制刷新"
+  },
+  "actionScrollTop": {
+    "message": "滚动到顶部"
+  },
+  "actionScrollBottom": {
+    "message": "滚动到底部"
+  },
+  "actionStop": {
+    "message": "停止加载"
+  },
+  "actionNewTab": {
+    "message": "新建标签页 / 打开链接"
+  },
+  "actionNewBackgroundTab": {
+    "message": "在后台打开链接"
+  },
+  "actionCloseTab": {
+    "message": "关闭当前标签页"
+  },
+  "actionRestoreTab": {
+    "message": "恢复最近关闭的标签页"
+  },
+  "actionDuplicateTab": {
+    "message": "复制标签页"
+  },
+  "actionNextTab": {
+    "message": "下一个标签页"
+  },
+  "actionPreviousTab": {
+    "message": "上一个标签页"
+  },
+  "actionTogglePin": {
+    "message": "固定 / 取消固定标签页"
+  },
+  "actionCloseLeft": {
+    "message": "关闭左侧标签页"
+  },
+  "actionCloseRight": {
+    "message": "关闭右侧标签页"
+  },
+  "actionOptions": {
+    "message": "打开设置"
+  }
+}
